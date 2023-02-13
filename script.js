@@ -4,76 +4,115 @@ const field = [
   ["", "", ""],
 ];
 
-let player = 0;
+const game = document.getElementById('game');
 
-const container = document.querySelector(".container");
+let player = 0;
+let stepCount = 0;
+
 
 for (let i = 0; i <= 2; i++) {
   for (let j = 0; j <= 2; j++) {
     const cell = document.createElement("div");
-    cell.setAttribute("id", `${[i]}${[j]}`);
+		cell.dataset.i = i;
+		cell.dataset.y = j;
     cell.setAttribute("class", "cell");
 
-    container.append(cell);
+    game.append(cell);
   }
 }
 
 function fill(e) {
-  let target = e.target.closest("div");
-  let id = target.id;
-  let i = id[0];
-  let j = id[1];
+	const cell = document.querySelector('.cell');
+	let target = e.target;
 
 	if (target.innerHTML === 'X' || target.innerHTML === 'O') {
 		return
 	} else {
 		if (player == 0) {
-			field[i][j] = "X";
+			field[target.dataset.i][target.dataset.y] = 'X';
 			target.innerHTML = "X";
 			player = 1;
+			stepCount++
 			check();
 		} else {
-			field[i][j] = "O";
+			field[target.dataset.i][target.dataset.y] = 'O';
 			target.innerHTML = "O";
 			player = 0;
+			stepCount++;
 			check();
 		}
 	}
 }
 
-document.addEventListener("click", fill);
+game.addEventListener("click", fill);
 
 
+function checkEqual(matrix) {
+	// Check rows
+	for (let i = 0; i < matrix.length; i++) {
+		let row = matrix[i];
+		let equal = true;
+		for (let j = 1; j < row.length; j++) {
+			if (row[j] !== row[j - 1]) {
+				equal = false;
+				console.log(false);
+				// winShow()
+				break;
+			}
+		}
+		if (equal) return winShow();
+	}
+	
+	// Check columns
+	for (let i = 0; i < matrix.length; i++) {
+		let equal = true;
+		for (let j = 1; j < matrix.length; j++) {
+			if (matrix[j][i] !== matrix[j - 1][i]) {
+				equal = false;
+				console.log(false);
+				break;
+			}
+		}
+		if (equal) return winShow();
+	}
+	
+	// Check diagonal (top left to bottom right)
+	let equal = true;
+	for (let i = 1; i < matrix.length; i++) {
+		if (matrix[i][i] !== matrix[i - 1][i - 1]) {
+			equal = false;
+			console.log(false);
+			break;
+		}
+	}
+	if (equal) return winShow();
+	
+	// Check diagonal (top right to bottom left)
+	equal = true;
+	for (let i = 1; i < matrix.length; i++) {
+		if (matrix[i][matrix.length - i - 1] !== matrix[i - 1][matrix.length - i]) {
+			equal = false;
+			console.log(false);
+			break;
+		}
+	}
+	if (equal) return winShow();
+	
+	return false;
+}
 function check() {
 
-	for(let i = 0; i < 3; i++) {
-		if (field[i][0] == field[i][1] == field[i][2]) {
-			winShow()
-		}
-	}
 
-	for (let i = 0; i < 3; i++) {
-		if (field[0][i] == field [1][i] == field[2][i]) {
-			winShow()
-		}
-	}
-
-	if (field[0][0] == field[1][1] == field[2][2]) {
-		winShow()
-	}
-
-	if (field[2][0] == field[1][1] == field[0][2]) {
-		winShow()
+	if (stepCount >= 5) {
+		checkEqual(field);
 	}
 }
 
+
 function winShow() {
-  const message = document.createElement("p");
-  const body = document.querySelector(".body");
+	const message = document.getElementById('message');
 
   message.innerHTML = `Congratulations!`;
-  message.setAttribute("class", "message");
 
-  body.append(message);
-  // document.removeEventListener('click', fill);
+  document.removeEventListener('click', fill);
 }
