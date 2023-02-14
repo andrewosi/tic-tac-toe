@@ -11,8 +11,8 @@ let player = 0;
 let stepCount = 0;
 
 body.onload = () => {
-  for (let i = 0; i <= 2; i++) {
-    for (let j = 0; j <= 2; j++) {
+  for (let i = 0; i < field.length; i++) {
+    for (let j = 0; j < field.length; j++) {
       const cell = document.createElement("div");
       cell.dataset.i = i;
       cell.dataset.y = j;
@@ -37,7 +37,6 @@ function createField() {
 }
 
 function fill(e) {
-  const cell = document.querySelector(".cell");
   let target = e.target;
 
   if (target.innerHTML === "X" || target.innerHTML === "O") {
@@ -68,51 +67,56 @@ function check() {
 }
 
 function checkEqual(field) {
+
+	const size = field.length;
+
   // Check rows
-  for (let i = 0; i < 3; i++) {
-    if (
-      field[i][0] === field[i][1] &&
-      field[i][1] === field[i][2] &&
-      field[i][0] !== ""
-    ) {
-      console.log(field[i][0]);
+  for (let i = 0; i < size; i++) {
+    let rowCount = 0;
+    for (let j = 0; j < size; j++) {
+      if (field[i][j] === field[i][0] && field[i][0] !== "") {
+        rowCount++;
+      }
+    }
+    if (rowCount === size) {
       return winShow(field[i][0]);
     }
   }
 
-  // Check columns
-  for (let j = 0; j < 3; j++) {
-    if (
-      field[0][j] === field[1][j] &&
-      field[1][j] === field[2][j] &&
-      field[0][j] !== ""
-    ) {
-      console.log(field[0][j]);
+	// Check columns
+  for (let j = 0; j < size; j++) {
+    let columnCount = 0;
+    for (let i = 0; i < size; i++) {
+      if (field[i][j] === field[0][j] && field[0][j] !== "") {
+        columnCount++;
+      }
+    }
+    if (columnCount === size) {
       return winShow(field[0][j]);
     }
   }
 
   // Check diagonals
-  if (
-    field[0][0] === field[1][1] &&
-    field[1][1] === field[2][2] &&
-    field[0][0] !== ""
-  ) {
-    console.log(field[0][0]);
-    return winShow([field[0][0]]);
+  let diagCount1 = 0;
+  let diagCount2 = 0;
+  for (let i = 0; i < size; i++) {
+    if (field[i][i] === field[0][0] && field[0][0] !== "") {
+      diagCount1++;
+    }
+    if (field[i][size - i - 1] === field[0][size - 1] && field[0][size - 1] !== "") {
+      diagCount2++;
+    }
   }
-  if (
-    field[0][2] === field[1][1] &&
-    field[1][1] === field[2][0] &&
-    field[0][2] !== ""
-  ) {
-    console.log(field[0][2]);
-    return winShow(field[0][2]);
+  if (diagCount1 === size) {
+    return winShow(field[0][0]);
+  }
+  if (diagCount2 === size) {
+    return winShow(field[0][size - 1]);
   }
 
-  // No winner
-  console.log("No winner");
-  return null;
+	console.log('No winner :(');
+	return null;
+
 }
 
 function winShow(winner) {
