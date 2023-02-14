@@ -114,5 +114,5 @@ function winShow() {
 
   message.innerHTML = `Congratulations!`;
 
-  document.removeEventListener('click', fill);
+  game.removeEventListener('click', fill);
 }
