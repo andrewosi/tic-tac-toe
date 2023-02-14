@@ -4,115 +4,121 @@ const field = [
   ["", "", ""],
 ];
 
-const game = document.getElementById('game');
+const game = document.getElementById("game");
+const body = document.querySelector(".body");
 
 let player = 0;
 let stepCount = 0;
 
+body.onload = () => {
+  for (let i = 0; i <= 2; i++) {
+    for (let j = 0; j <= 2; j++) {
+      const cell = document.createElement("div");
+      cell.dataset.i = i;
+      cell.dataset.y = j;
+      cell.setAttribute("class", "cell");
 
-for (let i = 0; i <= 2; i++) {
-  for (let j = 0; j <= 2; j++) {
-    const cell = document.createElement("div");
-		cell.dataset.i = i;
-		cell.dataset.y = j;
-    cell.setAttribute("class", "cell");
+      game.append(cell);
+    }
+  }
+};
 
-    game.append(cell);
+function createField() {
+  for (let i = 0; i <= 2; i++) {
+    for (let j = 0; j <= 2; j++) {
+      const cell = document.createElement("div");
+      cell.dataset.i = i;
+      cell.dataset.y = j;
+      cell.setAttribute("class", "cell");
+
+      game.append(cell);
+    }
   }
 }
 
 function fill(e) {
-	const cell = document.querySelector('.cell');
-	let target = e.target;
+  const cell = document.querySelector(".cell");
+  let target = e.target;
 
-	if (target.innerHTML === 'X' || target.innerHTML === 'O') {
-		return
-	} else {
-		if (player == 0) {
-			field[target.dataset.i][target.dataset.y] = 'X';
-			target.innerHTML = "X";
-			player = 1;
-			stepCount++
-			check();
-		} else {
-			field[target.dataset.i][target.dataset.y] = 'O';
-			target.innerHTML = "O";
-			player = 0;
-			stepCount++;
-			check();
-		}
-	}
+  if (target.innerHTML === "X" || target.innerHTML === "O") {
+    return;
+  } else {
+    if (player == 0) {
+      field[target.dataset.i][target.dataset.y] = "X";
+      target.innerHTML = "X";
+      player = 1;
+      stepCount++;
+      check();
+    } else {
+      field[target.dataset.i][target.dataset.y] = "O";
+      target.innerHTML = "O";
+      player = 0;
+      stepCount++;
+      check();
+    }
+  }
 }
 
 game.addEventListener("click", fill);
 
-
-function checkEqual(matrix) {
-	// Check rows
-	for (let i = 0; i < matrix.length; i++) {
-		let row = matrix[i];
-		let equal = true;
-		for (let j = 1; j < row.length; j++) {
-			if (row[j] !== row[j - 1]) {
-				equal = false;
-				console.log(false);
-				// winShow()
-				break;
-			}
-		}
-		if (equal) return winShow();
-	}
-	
-	// Check columns
-	for (let i = 0; i < matrix.length; i++) {
-		let equal = true;
-		for (let j = 1; j < matrix.length; j++) {
-			if (matrix[j][i] !== matrix[j - 1][i]) {
-				equal = false;
-				console.log(false);
-				break;
-			}
-		}
-		if (equal) return winShow();
-	}
-	
-	// Check diagonal (top left to bottom right)
-	let equal = true;
-	for (let i = 1; i < matrix.length; i++) {
-		if (matrix[i][i] !== matrix[i - 1][i - 1]) {
-			equal = false;
-			console.log(false);
-			break;
-		}
-	}
-	if (equal) return winShow();
-	
-	// Check diagonal (top right to bottom left)
-	equal = true;
-	for (let i = 1; i < matrix.length; i++) {
-		if (matrix[i][matrix.length - i - 1] !== matrix[i - 1][matrix.length - i]) {
-			equal = false;
-			console.log(false);
-			break;
-		}
-	}
-	if (equal) return winShow();
-	
-	return false;
-}
 function check() {
-
-
-	if (stepCount >= 5) {
-		checkEqual(field);
-	}
+  if (stepCount >= 5) {
+    checkEqual(field);
+  }
 }
 
+function checkEqual(field) {
+  // Check rows
+  for (let i = 0; i < 3; i++) {
+    if (
+      field[i][0] === field[i][1] &&
+      field[i][1] === field[i][2] &&
+      field[i][0] !== ""
+    ) {
+      console.log(field[i][0]);
+      return winShow(field[i][0]);
+    }
+  }
 
-function winShow() {
-	const message = document.getElementById('message');
+  // Check columns
+  for (let j = 0; j < 3; j++) {
+    if (
+      field[0][j] === field[1][j] &&
+      field[1][j] === field[2][j] &&
+      field[0][j] !== ""
+    ) {
+      console.log(field[0][j]);
+      return winShow(field[0][j]);
+    }
+  }
 
-  message.innerHTML = `Congratulations!`;
+  // Check diagonals
+  if (
+    field[0][0] === field[1][1] &&
+    field[1][1] === field[2][2] &&
+    field[0][0] !== ""
+  ) {
+    console.log(field[0][0]);
+    return winShow([field[0][0]]);
+  }
+  if (
+    field[0][2] === field[1][1] &&
+    field[1][1] === field[2][0] &&
+    field[0][2] !== ""
+  ) {
+    console.log(field[0][2]);
+    return winShow(field[0][2]);
+  }
 
-  game.removeEventListener('click', fill);
+  // No winner
+  console.log("No winner");
+  return null;
+}
+
+function winShow(winner) {
+  const message = document.getElementById("message");
+
+  message.innerHTML = `Congratulations, ${winner}!`;
+
+  game.removeEventListener("click", fill);
 }
